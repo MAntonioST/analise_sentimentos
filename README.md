@@ -97,9 +97,54 @@ sequenceDiagram
     O-->>M: Resultados
 
 
----
+## Estrutura de Diretorios
 
-## 📁 Estrutura de Diretórios
+    analise_sentimentos/
+    │
+    ├── README.md
+    ├── .gitignore
+    ├── requirements.txt
+    ├── Makefile
+    ├── main.py
+    │
+    ├── config/
+    │   └── config.yaml
+    │
+    ├── data/
+    │   └── raw/
+    │       └── b2w.csv
+    │
+    ├── src/
+    │   ├── data/
+    │   │   ├── loader.py
+    │   │   └── preprocessor.py
+    │   │
+    │   ├── features/
+    │   │   └── vectorizer.py
+    │   │
+    │   ├── models/
+    │   │   ├── base_model.py
+    │   │   └── sentiment_classifier.py
+    │   │
+    │   ├── evaluation/
+    │   │   ├── metrics.py
+    │   │   └── visualizer.py
+    │   │
+    │   └── pipeline/
+    │       └── orchestrator.py
+    │
+    ├── notebooks/
+    │   └── 01_analise_exploratoria.ipynb
+    │
+    ├── outputs/
+    │   ├── figures/
+    │   └── models/
+    │
+    └── tests/
+        ├── test_preprocessor.py
+        └── test_models.py
+
+
 
 🚀 Como Executar
 Pré-requisitos
@@ -107,33 +152,45 @@ Python 3.10+
 Git
 pip (gerenciador de pacotes Python)
 
-Instalação
+## Instalacao
 
-1. Clonar o repositório
-git clone https://github.com/seu-usuario/analise-sentimentos-b2w.git
+### 1. Clonar o repositorio
+
+```bash
+git clone https://github.com/MAntonioST/analise-sentimentos-b2w.git
 cd analise-sentimentos-b2w
+```
 
-2. Criar ambiente virtual
+### 2. Criar ambiente virtual
+
+```bash
 python -m venv venv
+```
 
-3. Ativar o ambiente virtual
-Linux/macOS:
+### 3. Ativar o ambiente virtual
+
+**Linux / macOS:**
+
+```bash
 source venv/bin/activate
+```
 
-Windows:
+**Windows:**
+
+```bash
 venv\Scripts\activate
+```
 
-4. Instalar dependências
+### 4. Instalar dependencias
+
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
+```
 
-5. Adicionar o dataset
-Coloque o arquivo b2w.csv na pasta data/raw/:
-# Se o arquivo estiver na raiz do projeto
-mv b2w.csv data/raw/
+### 5. Adicionar o dataset
 
-6. Executar o pipeline
-python main.py
+Coloque o arquivo `b2w.csv` na pasta `data/raw/`.
 
 
 📊 Resultados Esperados
@@ -162,11 +219,24 @@ weighted avg       0.85      0.85      0.85      1000
 | Matriz de Confusão | Heatmap mostrando acertos e erros do modelo | outputs/figures/matriz_confusao.png |
 | Distribuição de Classes | Gráfico de barras com balanceamento do dataset | outputs/figures/distribuicao_classes.png |
 
-💾 Modelos Salvos
-sentiment_model.joblib — Modelo de Regressão Logística treinado
-vectorizer.joblib — Vetorizador CountVectorizer ajustado
-🔧 Tecnologias Utilizadas
-Linguagem e Frameworks
+## Modelos Salvos
+
+- `sentiment_model.joblib` — Modelo de Regressao Logistica treinado
+- `vectorizer.joblib` — Vetorizador CountVectorizer ajustado
+
+---
+
+## Tecnologias Utilizadas
+
+### Linguagem e Frameworks
+
+- **Python 3.9+** — Linguagem principal
+- **Scikit-learn** — Modelos de Machine Learning
+- **Pandas** — Manipulacao de dados
+- **NLTK** — Processamento de linguagem natural
+- **Matplotlib / Seaborn** — Visualizacao de dados
+- **Joblib** — Persistencia dos modelos
+
 
 | Tecnologia | Versão | Uso |
 | --- | --- | --- |
@@ -181,14 +251,23 @@ Linguagem e Frameworks
 | joblib | 1.3.2 | Serialização de modelos |
 
 
-Ferramentas de Desenvolvimento
-Git — Controle de versão
-VS Code — IDE
-Jupyter Notebook — Análise exploratória
-Make — Automação de comandos
-🧪 Testes
-Para executar os testes unitários:
+## Ferramentas de Desenvolvimento
+
+- **Git** — Controle de versão
+- **VS Code** — IDE
+- **Jupyter Notebook** — Analise exploratoria
+- **Make** — Automacao de comandos
+
+---
+
+## Testes
+
+Para executar os testes unitarios:
+
+```bash
 python -m pytest tests/ -v
+```
+
 
 ---
 
@@ -228,26 +307,58 @@ python -m pytest tests/ -v
 
 
 
-Fork o projeto
-Crie uma branch para sua feature (git checkout -b feature/AmazingFeature)
-Commit suas mudanças (git commit -m 'Add some AmazingFeature')
-Push para a branch (git push origin feature/AmazingFeature)
-Abra um Pull Request
-📝 Licença
-Este projeto foi desenvolvido como parte do trabalho acadêmico da Pós-Graduação em Inteligência Artificial para Desenvolvedores da FIAP.
+## Contribuicao
 
-Autor: Marco
-Ano: 2024
+Contribuicoes sao bem-vindas! Siga os passos abaixo:
 
-📧 Contato
-GitHub: seu-usuario
-LinkedIn: seu-perfil
-Email: m.antonyteixeira@gmail.com
+1. Faca um **fork** do projeto
+2. Crie uma branch para sua feature:
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. Commit suas mudancas:
+   ```bash
+   git commit -m 'Add some AmazingFeature'
+   ```
+4. Push para a branch:
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+5. Abra um **Pull Request**
 
 
-📖 Referências
-scikit-learn Documentation — https://scikit-learn.org/stable/
-Pandas Documentation — https://pandas.pydata.org/docs/
-NLTK Book — https://www.nltk.org/book/
-Bag of Words Model — https://en.wikipedia.org/wiki/Bag-of-words_model
-Logistic Regression — https://en.wikipedia.org/wiki/Logistic_regression
+---
+
+## Licenca
+
+Este projeto esta licenciado sob a [MIT License](LICENSE).
+
+Copyright (c) 2026 Marco Antonio Teixeira
+
+
+---
+
+## Autor
+
+**Marco Antonio Teixeira**  
+Ano: 2026
+
+---
+
+## Contato
+
+- **GitHub:** [github.com/MAntonioST](https://github.com/MAntonioST)
+- **Email:** [m.antonyteixeira@gmail.com](mailto:m.antonyteixeira@gmail.com)
+
+---
+
+## Referencias
+
+- [scikit-learn Documentation](https://scikit-learn.org/stable/)
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
+- [NLTK Book](https://www.nltk.org/book/)
+- [Bag of Words Model](https://en.wikipedia.org/wiki/Bag-of-words_model)
+- [Logistic Regression](https://en.wikipedia.org/wiki/Logistic_regression)
+
+---
+
