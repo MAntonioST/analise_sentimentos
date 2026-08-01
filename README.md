@@ -96,61 +96,10 @@ sequenceDiagram
     VIS-->>O: Gráficos salvos
     O-->>M: Resultados
 
-### Estrutura de Diretórios
 
-analise_sentimentos/
-│
-├── 📄 README.md                          # Documentação completa
-├──  .gitignore                         # Arquivos ignorados pelo Git
-├── 📄 requirements.txt                   # Dependências Python
-├── 📄 Makefile                           # Comandos automatizados
-├── 📄 main.py                            # Ponto de entrada da aplicação
-│
-├──  config/
-│   └──  config.yaml                    # Configurações centralizadas
-│
-├── 📁 data/
-│   └── 📁 raw/                           # Dados brutos (não versionados)
-│       └── 📄 b2w.csv                    # Dataset original
-│
-├── 📁 src/                               # Código-fonte principal
-│   ├── 📁 data/                          # Módulo de dados
-│   │   ├── 📄 loader.py                  # Carregamento do dataset
-│   │   └── 📄 preprocessor.py            # Limpeza e pré-processamento
-│   │
-│   ├──  features/                      # Módulo de features
-│   │   └── 📄 vectorizer.py             # Vetorização (Bag of Words)
-│   │
-│   ├── 📁 models/                        # Módulo de modelos
-│   │   ├──  base_model.py             # Interface abstrata (SOLID)
-│   │   ── 📄 sentiment_classifier.py   # Regressão Logística
-│   │
-│   ├── 📁 evaluation/                    # Módulo de avaliação
-│   │   ├── 📄 metrics.py                # Cálculo de métricas
-│   │   └── 📄 visualizer.py            # Geração de gráficos
-│   │
-│   └── 📁 pipeline/                      # Módulo de pipeline
-│       └── 📄 orchestrator.py           # Orquestração do fluxo
-│
-├── 📁 notebooks/                         # Notebooks Jupyter
-│   └── 📄 01_analise_exploratoria.ipynb  # Análise exploratória
-│
-├── 📁 outputs/                           # Resultados gerados
-│   ├── 📁 figures/                       # Gráficos e visualizações
-│   │   ├── 📄 wordcloud_todas.png
-│   │   ├──  wordcloud_positivas.png
-│   │   ├── 📄 wordcloud_negativas.png
-│   │   ├── 📄 matriz_confusao.png
-│   │   └── 📄 distribuicao_classes.png
-│   └── 📁 models/                        # Modelos serializados
-│       ├── 📄 sentiment_model.joblib
-│       └── 📄 vectorizer.joblib
-│
-── 📁 tests/                             # Testes unitários
-    ├── 📄 test_preprocessor.py
-    └── 📄 test_models.py
+---
 
-
+## 📁 Estrutura de Diretórios
 
 🚀 Como Executar
 Pré-requisitos
@@ -241,27 +190,43 @@ Make — Automação de comandos
 Para executar os testes unitários:
 python -m pytest tests/ -v
 
+---
 
-📚 Conceitos Aplicados
-Processamento de Linguagem Natural (PLN)
-Tokenização — Divisão do texto em palavras
-Vetorização — Conversão de texto em representação numérica
-Bag of Words — Modelo simples que conta frequência de palavras
-CountVectorizer — Implementação do sklearn para BoW
-Machine Learning
-Classificação Binária — Duas classes (positivo/negativo)
-Regressão Logística — Modelo linear para classificação
-Train/Test Split — Divisão dos dados para treino e avaliação
-Stratification — Manter proporção das classes no split
-Métricas de Avaliação — Acurácia, precisão, recall, F1-score
-Engenharia de Software
-SOLID — Princípios de design orientado a objetos
-Arquitetura Modular — Separação de responsabilidades
-Pipeline de Dados — Fluxo organizado de processamento
-Configuração Centralizada — YAML para parâmetros
-Versionamento — Git para controle de código
-🤝 Contribuindo
-Este é um projeto acadêmico, mas contribuições são bem-vindas!
+## 📚 Conceitos Aplicados
+
+### Processamento de Linguagem Natural (PLN)
+
+| Conceito | Descrição |
+|----------|-----------|
+| **Tokenização** | Divisão do texto em palavras (tokens) |
+| **Vetorização** | Conversão de texto em representação numérica |
+| **Bag of Words** | Modelo que conta frequência de palavras |
+| **CountVectorizer** | Implementação do sklearn para BoW |
+
+### Machine Learning
+
+| Conceito | Descrição |
+|----------|-----------|
+| **Classificação Binária** | Duas classes: positivo (1) e negativo (0) |
+| **Regressão Logística** | Modelo linear para classificação probabilística |
+| **Train/Test Split** | Divisão dos dados em treino (80%) e teste (20%) |
+| **Stratification** | Manter proporção das classes em ambas as partições |
+| **Métricas** | Acurácia, Precisão, Recall, F1-Score |
+
+### Engenharia de Software
+
+| Conceito | Descrição |
+|----------|-----------|
+| **SOLID** | Princípios de design orientado a objetos |
+| **Arquitetura Modular** | Separação de responsabilidades por contexto |
+| **Pipeline de Dados** | Fluxo organizado: carga → limpeza → vetorização → modelo |
+| **Configuração YAML** | Parâmetros centralizados em `config/config.yaml` |
+| **Git** | Versionamento de código |
+| **Type Hints** | Documentação de tipos para melhor legibilidade |
+
+---
+
+
 
 Fork o projeto
 Crie uma branch para sua feature (git checkout -b feature/AmazingFeature)
