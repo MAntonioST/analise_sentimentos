@@ -1,0 +1,25 @@
+# ============================================
+# Dependências do Projeto
+# Análise de Sentimentos - B2W
+# ============================================
+
+# Manipulação de dados
+pandas==2.2.0
+numpy==1.26.3
+
+# Machine Learning
+scikit-learn==1.4.0
+
+# Texto e NLP
+nltk==3.8.1
+
+# Visualização
+matplotlib==3.8.2
+seaborn==0.13.1
+wordcloud==1.9.3
+
+# Configuração
+pyyaml==6.0.1
+
+# Serialização de modelos
+joblib==1.3.2

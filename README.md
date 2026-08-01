@@ -1,0 +1,288 @@
+# 📊 Análise de Sentimentos - B2W
+
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4.0-orange?logo=scikit-learn&logoColor=white)
+![License](https://img.shields.io/badge/License-Academic-green)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
+
+> **Pós-Graduação em Inteligência Artificial para Desenvolvedores**  
+> **FIAP** — Disciplina: Processamento de Linguagem Natural (PLN)  
+> **Autor:** Marco Antonio Teixeira
+
+---
+
+## 📖 Sobre o Projeto
+
+Este projeto implementa um **classificador de sentimentos** para avaliações de produtos da **B2W** (Americanas, Submarino, Shoptime), utilizando técnicas de **Processamento de Linguagem Natural (PLN)** e **Machine Learning**.
+
+O sistema analisa textos de reviews e classifica automaticamente o sentimento como:
+- ✅ **Positivo (1)** — Cliente satisfeito
+- ❌ **Negativo (0)** — Cliente insatisfeito
+
+### 🎯 Objetivos
+
+- Implementar um pipeline completo de NLP seguindo boas práticas de engenharia de software
+- Aplicar princípios **SOLID** na arquitetura do código
+- Utilizar **Bag of Words** (CountVectorizer) para vetorização de texto
+- Treinar um modelo de **Regressão Logística** para classificação binária
+- Gerar visualizações para análise exploratória dos dados
+- Criar um projeto profissional e reutilizável como portfólio
+
+---
+
+## 🏗️ Arquitetura do Projeto
+
+### Princípios SOLID Aplicados
+
+| Princípio | Descrição | Aplicação no Projeto |
+|-----------|-----------|---------------------|
+| **S** — Single Responsibility | Cada classe tem uma única responsabilidade | `DataLoader` só carrega, `Preprocessor` só limpa, `Vectorizer` só vetoriza |
+| **O** — Open/Closed | Aberto para extensão, fechado para modificação | `Orchestrator` permite adicionar novos modelos sem modificar o código base |
+| **L** — Liskov Substitution | Subtipos substituíveis por tipos base | `SentimentClassifier` pode substituir `BaseModel` em qualquer lugar |
+| **I** — Interface Segregation | Interfaces específicas e enxutas | `BaseModel` expõe apenas métodos essenciais: `treinar()`, `prever()`, `avaliar()` |
+| **D** — Dependency Inversion | Depender de abstrações, não de implementações | `Orchestrator` depende de `BaseModel`, não de `LogisticRegression` diretamente |
+
+### Diagrama de Arquitetura
+
+```mermaid
+graph TB
+    A[main.py] --> B[PipelineOrchestrator]
+    B --> C[DataLoader]
+    B --> D[DataPreprocessor]
+    B --> E[TextVectorizer]
+    B --> F[SentimentClassifier]
+    B --> G[Visualizer]
+    B --> H[MetricsCalculator]
+    
+    C --> I[(b2w.csv)]
+    D --> J[DataFrame Limpo]
+    E --> K[Matriz Esparsa]
+    F --> L[Modelo Treinado]
+    G --> M[Gráficos PNG]
+    H --> N[Métricas]
+    
+    style A fill:#e1f5ff,stroke:#01579b,stroke-width:2px
+    style B fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style I fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    style M fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+```
+
+### Fluxo do Pipeline
+
+sequenceDiagram
+    participant M as main.py
+    participant O as Orchestrator
+    participant L as DataLoader
+    participant P as Preprocessor
+    participant V as Vectorizer
+    participant MD as Model
+    participant E as Evaluator
+    participant VIS as Visualizer
+
+    M->>O: executar()
+    O->>L: carregar()
+    L-->>O: DataFrame bruto
+    O->>P: processar(df)
+    P-->>O: DataFrame limpo
+    O->>V: fit_transform(textos)
+    V-->>O: Matriz esparsa (BoW)
+    O->>MD: treinar(X_train, y_train)
+    MD-->>O: Modelo treinado
+    O->>MD: prever(X_test)
+    MD-->>O: Predições
+    O->>E: acuracia(), matriz_confusao()
+    E-->>O: Métricas
+    O->>VIS: nuvem_palavras(), matriz_confusao()
+    VIS-->>O: Gráficos salvos
+    O-->>M: Resultados
+
+### Estrutura de Diretórios
+
+analise_sentimentos/
+│
+├── 📄 README.md                          # Documentação completa
+├──  .gitignore                         # Arquivos ignorados pelo Git
+├── 📄 requirements.txt                   # Dependências Python
+├── 📄 Makefile                           # Comandos automatizados
+├── 📄 main.py                            # Ponto de entrada da aplicação
+│
+├──  config/
+│   └──  config.yaml                    # Configurações centralizadas
+│
+├── 📁 data/
+│   └── 📁 raw/                           # Dados brutos (não versionados)
+│       └── 📄 b2w.csv                    # Dataset original
+│
+├── 📁 src/                               # Código-fonte principal
+│   ├── 📁 data/                          # Módulo de dados
+│   │   ├── 📄 loader.py                  # Carregamento do dataset
+│   │   └── 📄 preprocessor.py            # Limpeza e pré-processamento
+│   │
+│   ├──  features/                      # Módulo de features
+│   │   └── 📄 vectorizer.py             # Vetorização (Bag of Words)
+│   │
+│   ├── 📁 models/                        # Módulo de modelos
+│   │   ├──  base_model.py             # Interface abstrata (SOLID)
+│   │   ── 📄 sentiment_classifier.py   # Regressão Logística
+│   │
+│   ├── 📁 evaluation/                    # Módulo de avaliação
+│   │   ├── 📄 metrics.py                # Cálculo de métricas
+│   │   └── 📄 visualizer.py            # Geração de gráficos
+│   │
+│   └── 📁 pipeline/                      # Módulo de pipeline
+│       └── 📄 orchestrator.py           # Orquestração do fluxo
+│
+├── 📁 notebooks/                         # Notebooks Jupyter
+│   └── 📄 01_analise_exploratoria.ipynb  # Análise exploratória
+│
+├── 📁 outputs/                           # Resultados gerados
+│   ├── 📁 figures/                       # Gráficos e visualizações
+│   │   ├── 📄 wordcloud_todas.png
+│   │   ├──  wordcloud_positivas.png
+│   │   ├── 📄 wordcloud_negativas.png
+│   │   ├── 📄 matriz_confusao.png
+│   │   └── 📄 distribuicao_classes.png
+│   └── 📁 models/                        # Modelos serializados
+│       ├── 📄 sentiment_model.joblib
+│       └── 📄 vectorizer.joblib
+│
+── 📁 tests/                             # Testes unitários
+    ├── 📄 test_preprocessor.py
+    └── 📄 test_models.py
+
+
+
+🚀 Como Executar
+Pré-requisitos
+Python 3.10+
+Git
+pip (gerenciador de pacotes Python)
+
+Instalação
+
+1. Clonar o repositório
+git clone https://github.com/seu-usuario/analise-sentimentos-b2w.git
+cd analise-sentimentos-b2w
+
+2. Criar ambiente virtual
+python -m venv venv
+
+3. Ativar o ambiente virtual
+Linux/macOS:
+source venv/bin/activate
+
+Windows:
+venv\Scripts\activate
+
+4. Instalar dependências
+pip install --upgrade pip
+pip install -r requirements.txt
+
+5. Adicionar o dataset
+Coloque o arquivo b2w.csv na pasta data/raw/:
+# Se o arquivo estiver na raiz do projeto
+mv b2w.csv data/raw/
+
+6. Executar o pipeline
+python main.py
+
+
+📊 Resultados Esperados
+Após a execução, o projeto gera:
+
+📈 Métricas do Modelo
+
+Acurácia: ~85%
+
+Relatório de Classificação:
+              precision    recall  f1-score   support
+
+Negativo (0)       0.85      0.84      0.85       500
+Positivo (1)       0.86      0.87      0.86       500
+
+    accuracy                           0.85      1000
+   macro avg       0.85      0.85      0.85      1000
+weighted avg       0.85      0.85      0.85      1000
+
+### Visualizações Geradas
+| Gráfico | Descrição | Localização |
+| --- | --- | --- |
+| Nuvem de Palavras (Geral) | Palavras mais frequentes em todas as avaliações | outputs/figures/wordcloud_todas.png |
+| Nuvem de Palavras (Positivas) | Palavras características de avaliações positivas | outputs/figures/wordcloud_positivas.png |
+| Nuvem de Palavras (Negativas) | Palavras características de avaliações negativas | outputs/figures/wordcloud_negativas.png |
+| Matriz de Confusão | Heatmap mostrando acertos e erros do modelo | outputs/figures/matriz_confusao.png |
+| Distribuição de Classes | Gráfico de barras com balanceamento do dataset | outputs/figures/distribuicao_classes.png |
+
+💾 Modelos Salvos
+sentiment_model.joblib — Modelo de Regressão Logística treinado
+vectorizer.joblib — Vetorizador CountVectorizer ajustado
+🔧 Tecnologias Utilizadas
+Linguagem e Frameworks
+
+| Tecnologia | Versão | Uso |
+| --- | --- | --- |
+| Python | 3.10+ | Linguagem principal |
+| pandas | 2.2.0 | Manipulação e análise de dados |
+| numpy | 1.26.3 | Computação numérica |
+| scikit-learn | 1.4.0 | Machine Learning e métricas |
+| matplotlib | 3.8.2 | Visualizações estáticas |
+| seaborn | 0.13.1 | Visualizações estatísticas |
+| wordcloud | 1.9.3 | Nuvens de palavras |
+| PyYAML | 6.0.1 | Configurações em YAML |
+| joblib | 1.3.2 | Serialização de modelos |
+
+
+Ferramentas de Desenvolvimento
+Git — Controle de versão
+VS Code — IDE
+Jupyter Notebook — Análise exploratória
+Make — Automação de comandos
+🧪 Testes
+Para executar os testes unitários:
+python -m pytest tests/ -v
+
+
+📚 Conceitos Aplicados
+Processamento de Linguagem Natural (PLN)
+Tokenização — Divisão do texto em palavras
+Vetorização — Conversão de texto em representação numérica
+Bag of Words — Modelo simples que conta frequência de palavras
+CountVectorizer — Implementação do sklearn para BoW
+Machine Learning
+Classificação Binária — Duas classes (positivo/negativo)
+Regressão Logística — Modelo linear para classificação
+Train/Test Split — Divisão dos dados para treino e avaliação
+Stratification — Manter proporção das classes no split
+Métricas de Avaliação — Acurácia, precisão, recall, F1-score
+Engenharia de Software
+SOLID — Princípios de design orientado a objetos
+Arquitetura Modular — Separação de responsabilidades
+Pipeline de Dados — Fluxo organizado de processamento
+Configuração Centralizada — YAML para parâmetros
+Versionamento — Git para controle de código
+🤝 Contribuindo
+Este é um projeto acadêmico, mas contribuições são bem-vindas!
+
+Fork o projeto
+Crie uma branch para sua feature (git checkout -b feature/AmazingFeature)
+Commit suas mudanças (git commit -m 'Add some AmazingFeature')
+Push para a branch (git push origin feature/AmazingFeature)
+Abra um Pull Request
+📝 Licença
+Este projeto foi desenvolvido como parte do trabalho acadêmico da Pós-Graduação em Inteligência Artificial para Desenvolvedores da FIAP.
+
+Autor: Marco
+Ano: 2024
+
+📧 Contato
+GitHub: seu-usuario
+LinkedIn: seu-perfil
+Email: m.antonyteixeira@gmail.com
+
+
+📖 Referências
+scikit-learn Documentation — https://scikit-learn.org/stable/
+Pandas Documentation — https://pandas.pydata.org/docs/
+NLTK Book — https://www.nltk.org/book/
+Bag of Words Model — https://en.wikipedia.org/wiki/Bag-of-words_model
+Logistic Regression — https://en.wikipedia.org/wiki/Logistic_regression

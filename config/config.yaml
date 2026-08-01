@@ -1,0 +1,56 @@
+# ============================================
+# Configurações Centralizadas do Projeto
+# ============================================
+
+# --------------------------------------------------
+# Dataset
+# --------------------------------------------------
+dataset:
+  path: "data/raw/b2w.csv"
+  text_column: "review_text"
+  target_column: "polarity"
+  colunas_remover:
+    - "original_index"
+    - "review_text_processed"
+    - "review_text_tokenized"
+    - "rating"
+    - "kfold_polarity"
+    - "kfold_rating"
+
+# --------------------------------------------------
+# Vetorização (CountVectorizer)
+# --------------------------------------------------
+vectorization:
+  method: "count"                # count | tfidf
+  max_features: 100              # Número máximo de features
+
+# --------------------------------------------------
+# Modelo (Regressão Logística)
+# --------------------------------------------------
+model:
+  type: "logistic_regression"    # Tipo do modelo
+  random_state: 71
+
+# --------------------------------------------------
+# Treinamento
+# --------------------------------------------------
+training:
+  test_size: 0.2                 # Proporção do teste (20%)
+  random_state: 71               # Semente para reprodutibilidade
+  stratify: true                 # Manter proporção das classes no split
+
+# --------------------------------------------------
+# WordCloud
+# --------------------------------------------------
+wordcloud:
+  width: 800                     # Largura da imagem
+  height: 500                    # Altura da imagem
+  max_font_size: 110             # Tamanho máximo da fonte
+  collocations: false            # Não agrupar bigramas
+
+# --------------------------------------------------
+# Outputs
+# --------------------------------------------------
+outputs:
+  figures_dir: "outputs/figures"   # Pasta para gráficos
+  models_dir: "outputs/models"     # Pasta para modelos salvos
