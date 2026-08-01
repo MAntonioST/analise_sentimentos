@@ -28,21 +28,7 @@ O sistema analisa textos de reviews e classifica automaticamente o sentimento co
 - Gerar visualizações para análise exploratória dos dados
 - Criar um projeto profissional e reutilizável como portfólio
 
----
-
-## 🏗️ Arquitetura do Projeto
-
-### Princípios SOLID Aplicados
-
-| Princípio | Descrição | Aplicação no Projeto |
-|-----------|-----------|---------------------|
-| **S** — Single Responsibility | Cada classe tem uma única responsabilidade | `DataLoader` só carrega, `Preprocessor` só limpa, `Vectorizer` só vetoriza |
-| **O** — Open/Closed | Aberto para extensão, fechado para modificação | `Orchestrator` permite adicionar novos modelos sem modificar o código base |
-| **L** — Liskov Substitution | Subtipos substituíveis por tipos base | `SentimentClassifier` pode substituir `BaseModel` em qualquer lugar |
-| **I** — Interface Segregation | Interfaces específicas e enxutas | `BaseModel` expõe apenas métodos essenciais: `treinar()`, `prever()`, `avaliar()` |
-| **D** — Dependency Inversion | Depender de abstrações, não de implementações | `Orchestrator` depende de `BaseModel`, não de `LogisticRegression` diretamente |
-
-### Diagrama de Arquitetura
+## Arquitetura do Projeto
 
 ```mermaid
 graph TB
@@ -53,19 +39,15 @@ graph TB
     B --> F[SentimentClassifier]
     B --> G[Visualizer]
     B --> H[MetricsCalculator]
-    
     C --> I[(b2w.csv)]
-    D --> J[DataFrame Limpo]
-    E --> K[Matriz Esparsa]
-    F --> L[Modelo Treinado]
-    G --> M[Gráficos PNG]
-    H --> N[Métricas]
-    
-    style A fill:#e1f5ff,stroke:#01579b,stroke-width:2px
-    style B fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style I fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    style M fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    D --> J[Textos Limpos]
+    E --> K[Matriz de Features]
+    F --> L[Previsoes]
+    G --> M[Graficos]
+    H --> N[Relatorio]
 ```
+
+
 
 ### Fluxo do Pipeline
 
