@@ -12,6 +12,7 @@ ARQUITETURA:
     S - Single Responsibility (SRP)
         ├── loader.py          → Responsável apenas por CARREGAR dados
         ├── preprocessor.py    → Responsável apenas por LIMPAR dados
+        ├── nltk_processor.py  → Responsável apenas por TOKENIZAR e REMOVER STOPWORDS
         ├── vectorizer.py      → Responsável apenas por VETORIZAR texto
         ├── metrics.py         → Responsável apenas por CALCULAR métricas
         └── visualizer.py      → Responsável apenas por CRIAR gráficos
@@ -42,6 +43,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 # ===================== IMPORTAÇÕES =====================
 from data.loader import DataLoader
 from data.preprocessor import DataPreprocessor
+from features.nltk_processor import NLTKProcessor        # ← NOVO: Aula 3
 from features.vectorizer import TextVectorizer
 from models.sentiment_classifier import SentimentClassifier
 from evaluation.visualizer import Visualizer
@@ -71,6 +73,7 @@ def main():
 
     loader = DataLoader(CONFIG_PATH)
     preprocessor = DataPreprocessor(CONFIG_PATH)
+    nltk_processor = NLTKProcessor()                    # ← NOVO: Aula 3
     vectorizer = TextVectorizer(CONFIG_PATH)
     modelo = SentimentClassifier()
     visualizer = Visualizer(CONFIG_PATH)
@@ -86,6 +89,7 @@ def main():
         resultado = orchestrator.executar(
             loader=loader,
             preprocessor=preprocessor,
+            nltk_processor=nltk_processor,              # ← NOVO: Aula 3
             vectorizer=vectorizer,
             modelo=modelo,
             visualizer=visualizer,

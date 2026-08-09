@@ -47,6 +47,7 @@ class PipelineOrchestrator:
         self,
         loader,
         preprocessor,
+        nltk_processor,      # ← NOVO PARÂMETRO
         vectorizer,
         modelo,
         visualizer,
@@ -85,6 +86,12 @@ class PipelineOrchestrator:
         # ETAPA 2: PRÉ-PROCESSAR
         # ============================================
         df = preprocessor.processar(df)
+
+        # ============================================
+        # ETAPA 2.5: NLTK — TOKENIZAÇÃO + STOPWORDS  ← NOVA ETAPA
+        # ============================================
+        coluna_texto = self.config["dataset"]["text_column"]
+        df = nltk_processor.processar(df, coluna_texto)
 
         # ============================================
         # ETAPA 3: VETORIZAR (Bag of Words)
