@@ -22,7 +22,7 @@ dataset:
 # --------------------------------------------------
 vectorization:
   method: "count"                # count | tfidf
-  max_features: 100              # Número máximo de features
+  max_features: 1000              # Número máximo de features
   ngram_min: 1
   ngram_max: 2
 
