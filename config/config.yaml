@@ -18,7 +18,7 @@ dataset:
     - "kfold_rating"
 
 # --------------------------------------------------
-# Vetorização (CountVectorizer)
+# Vetorização (TF-IDF)
 # --------------------------------------------------
 vectorization:
   method: "count"                # count | tfidf
