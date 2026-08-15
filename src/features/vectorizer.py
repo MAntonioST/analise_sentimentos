@@ -82,6 +82,25 @@ class TextVectorizer:
         )
         return matriz_tfidf
 
+    def transform(self, textos):
+        """
+        Transforma novos textos usando o vocabulário e os pesos IDF
+        já aprendidos no fit_transform (sem reajustar o vetorizador).
+
+        Deve ser usado SEMPRE para o conjunto de teste, evitando
+        vazamento de dados (data leakage) entre treino e teste.
+
+        Args:
+            textos (array-like): Lista/Series de textos a serem transformados.
+
+        Returns:
+            scipy.sparse.spmatrix: Matriz esparsa TF-IDF.
+        """
+        print(f"[Vectorizer] Transformando {len(textos)} textos (sem refit)...")
+        matriz = self.vectorizer.transform(textos)
+        print(f"[Vectorizer] Matriz gerada: {matriz.shape[0]} docs x {matriz.shape[1]} features")
+        return matriz
+
     def get_feature_names(self) -> list:
         """
         Retorna os nomes das features (termos) extraídos pelo vetorizador.

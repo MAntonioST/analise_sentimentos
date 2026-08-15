@@ -28,8 +28,8 @@ class PipelineOrchestrator:
     2. Pré-processar
     3. Tokenizar e remover stopwords
     4. Aplicar stemming
-    5. Vetorizar
-    6. Split treino/teste
+    5. Split treino/teste (ANTES da vetorização, evita vazamento)
+    6. Vetorizar (fit apenas no treino, transform no teste)
     7. Treinar modelo
     8. Avaliar modelo
     9. Gerar visualizações
@@ -49,7 +49,7 @@ class PipelineOrchestrator:
         self,
         loader,
         preprocessor,
-        nltk_processor,      # ← NOVO PARÂMETRO
+        nltk_processor,
         vectorizer,
         modelo,
         visualizer,
@@ -64,6 +64,7 @@ class PipelineOrchestrator:
         Args:
             loader: Instância de DataLoader.
             preprocessor: Instância de DataPreprocessor.
+            nltk_processor: Instância de NLTKProcessor.
             vectorizer: Instância de TextVectorizer.
             modelo: Instância de BaseModel (ou qualquer subclasse).
             visualizer: Instância de Visualizer.
@@ -90,7 +91,7 @@ class PipelineOrchestrator:
         df = preprocessor.processar(df)
 
         # ============================================
-        # ETAPA 2.5: NLTK — TOKENIZAÇÃO + STOPWORDS  ← NOVA ETAPA
+        # ETAPA 2.5: NLTK — TOKENIZAÇÃO + STOPWORDS
         # ============================================
         coluna_texto = self.config["dataset"]["text_column"]
         df = nltk_processor.processar(df, coluna_texto)
@@ -101,46 +102,50 @@ class PipelineOrchestrator:
         coluna_texto_stemmed = f"{coluna_texto}_stemmed"
 
         df = nltk_processor.aplicar_stemming(
-        df=df,
-        coluna_origem=coluna_texto,
-        coluna_destino=coluna_texto_stemmed,
-)
-        # ============================================
-        # ETAPA 3: VETORIZAR TEXTO STEMMIZADO
-        # ============================================
-        print("\n" + "=" * 50)
-        print("  VETORIZAÇÃO DO TEXTO")
-        print("=" * 50)
-
-        coluna_texto = self.config["dataset"]["text_column"]
-        coluna_texto_stemmed = f"{coluna_texto}_stemmed"
-
-        X = vectorizer.fit_transform(df[coluna_texto_stemmed])
-        y = df[self.config["dataset"]["target_column"]]
+            df=df,
+            coluna_origem=coluna_texto,
+            coluna_destino=coluna_texto_stemmed,
+        )
 
         # ============================================
-        # ETAPA 4: SPLIT TREINO/TESTE
+        # ETAPA 3: SPLIT TREINO/TESTE (ANTES DA VETORIZAÇÃO)
         # ============================================
         print("\n" + "=" * 50)
         print("  DIVISÃO TREINO/TESTE")
         print("=" * 50)
+
+        textos = df[coluna_texto_stemmed]
+        y = df[self.config["dataset"]["target_column"]]
 
         cfg_train = self.config["training"]
 
         # train_test_split: Divide os dados em treino e teste
         # stratify: Mantém a proporção das classes em ambas as partições
         # random_state: Garante que o split seja sempre o mesmo (reprodutibilidade)
-        X_train, X_test, y_train, y_test = train_test_split(
-            X,
+        textos_train, textos_test, y_train, y_test = train_test_split(
+            textos,
             y,
             test_size=cfg_train["test_size"],
             stratify=y if cfg_train["stratify"] else None,
             random_state=cfg_train["random_state"]
         )
 
-        print(f"[Pipeline] Treino: {X_train.shape[0]} amostras")
-        print(f"[Pipeline] Teste:  {X_test.shape[0]} amostras")
+        print(f"[Pipeline] Treino: {len(textos_train)} amostras")
+        print(f"[Pipeline] Teste:  {len(textos_test)} amostras")
         print(f"[Pipeline] Distribuição treino:\n{y_train.value_counts()}")
+
+        # ============================================
+        # ETAPA 4: VETORIZAR (fit apenas no treino)
+        # ============================================
+        print("\n" + "=" * 50)
+        print("  VETORIZAÇÃO DO TEXTO")
+        print("=" * 50)
+
+        # fit_transform aprende o vocabulário e o IDF SOMENTE com o treino.
+        # transform aplica esse mesmo vocabulário/IDF ao teste,
+        # sem deixar o teste "vazar" informação para o treinamento.
+        X_train = vectorizer.fit_transform(textos_train)
+        X_test = vectorizer.transform(textos_test)
 
         # ============================================
         # ETAPA 5: TREINAR MODELO
@@ -182,24 +187,24 @@ class PipelineOrchestrator:
 
         # Nuvem de palavras geral
         visualizer.nuvem_palavras(
-        df,
-        coluna_texto_stemmed,
-        polaridade=None,
-)
+            df,
+            coluna_texto_stemmed,
+            polaridade=None,
+        )
 
         # Nuvem de palavras - apenas avaliações negativas (polarity == 0)
         visualizer.nuvem_palavras(
-        df,
-        coluna_texto_stemmed,
-        polaridade=0,
-)
+            df,
+            coluna_texto_stemmed,
+            polaridade=0,
+        )
 
         # Nuvem de palavras - apenas avaliações positivas (polarity == 1)
         visualizer.nuvem_palavras(
-        df,
-        coluna_texto_stemmed,
-        polaridade=1,
-)
+            df,
+            coluna_texto_stemmed,
+            polaridade=1,
+        )
 
         # Matriz de confusão
         visualizer.matriz_confusao(cm)
