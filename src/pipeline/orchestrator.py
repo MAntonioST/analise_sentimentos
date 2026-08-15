@@ -26,11 +26,13 @@ class PipelineOrchestrator:
     Fluxo do pipeline:
     1. Carregar dados
     2. Pré-processar
-    3. Vetorizar (Bag of Words)
-    4. Split treino/teste
-    5. Treinar modelo
-    6. Avaliar modelo
-    7. Gerar visualizações
+    3. Tokenizar e remover stopwords
+    4. Aplicar stemming
+    5. Vetorizar
+    6. Split treino/teste
+    7. Treinar modelo
+    8. Avaliar modelo
+    9. Gerar visualizações
     """
 
     def __init__(self, config_path: str = "config/config.yaml"):
@@ -94,14 +96,26 @@ class PipelineOrchestrator:
         df = nltk_processor.processar(df, coluna_texto)
 
         # ============================================
-        # ETAPA 3: VETORIZAR (Bag of Words)
+        # ETAPA 2.6: NLTK — STEMMING
+        # ============================================
+        coluna_texto_stemmed = f"{coluna_texto}_stemmed"
+
+        df = nltk_processor.aplicar_stemming(
+        df=df,
+        coluna_origem=coluna_texto,
+        coluna_destino=coluna_texto_stemmed,
+)
+        # ============================================
+        # ETAPA 3: VETORIZAR TEXTO STEMMIZADO
         # ============================================
         print("\n" + "=" * 50)
         print("  VETORIZAÇÃO DO TEXTO")
         print("=" * 50)
 
         coluna_texto = self.config["dataset"]["text_column"]
-        X = vectorizer.fit_transform(df[coluna_texto])
+        coluna_texto_stemmed = f"{coluna_texto}_stemmed"
+
+        X = vectorizer.fit_transform(df[coluna_texto_stemmed])
         y = df[self.config["dataset"]["target_column"]]
 
         # ============================================
@@ -167,13 +181,25 @@ class PipelineOrchestrator:
         visualizer.distribuicao_classes(df, coluna_target)
 
         # Nuvem de palavras geral
-        visualizer.nuvem_palavras(df, coluna_texto, polaridade=None)
+        visualizer.nuvem_palavras(
+        df,
+        coluna_texto_stemmed,
+        polaridade=None,
+)
 
         # Nuvem de palavras - apenas avaliações negativas (polarity == 0)
-        visualizer.nuvem_palavras(df, coluna_texto, polaridade=0)
+        visualizer.nuvem_palavras(
+        df,
+        coluna_texto_stemmed,
+        polaridade=0,
+)
 
         # Nuvem de palavras - apenas avaliações positivas (polarity == 1)
-        visualizer.nuvem_palavras(df, coluna_texto, polaridade=1)
+        visualizer.nuvem_palavras(
+        df,
+        coluna_texto_stemmed,
+        polaridade=1,
+)
 
         # Matriz de confusão
         visualizer.matriz_confusao(cm)

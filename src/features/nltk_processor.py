@@ -1,80 +1,120 @@
 """
 Módulo: nltk_processor.py
-Responsabilidade: Tokenização e remoção de stopwords com NLTK
-Princípio SOLID: SRP (Single Responsibility Principle)
-- Esta classe tem UMA única razão para mudar: a lógica de tokenização/stopwords
+Responsabilidade: processamento linguístico com NLTK.
 
-OCP: Aberta para extensão — novos métodos de stemming, lematização etc.
-     podem ser adicionados como novos métodos ou subclasses.
+Etapas disponíveis:
+1. Tokenização;
+2. Conversão para minúsculas;
+3. Remoção de stopwords;
+4. Manutenção de tokens alfabéticos;
+5. Stemming em português.
+
+Princípio SOLID:
+- SRP: responsabilidade pelo processamento linguístico;
+- OCP: novas etapas linguísticas podem ser adicionadas sem alterar
+  o contrato principal do pipeline.
 """
+
+from __future__ import annotations
 
 import nltk
 import pandas as pd
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
+from src.features.stemming import PortugueseStemmer
+
 
 class NLTKProcessor:
     """
-    Classe responsável pelo pré-processamento linguístico com NLTK.
+    Processa textos usando tokenização, stopwords e stemming.
 
-    Pipeline:
-    1. Converte para minúsculas
-    2. Tokeniza o texto (word_tokenize)
-    3. Remove stopwords em português
-    4. Mantém apenas tokens alfabéticos
-
-    SRP: Única responsabilidade = processamento NLTK.
-    DIP: Pode ser substituída por SpacyProcessor sem quebrar o pipeline.
-
-    Attributes:
-        stops (set): Conjunto de stopwords em português.
+    A coluna original recebida é processada normalmente. O stemming,
+    por sua vez, é salvo em uma nova coluna para preservar o resultado
+    das etapas anteriores.
     """
 
-    def __init__(self):
-        """
-        Inicializa o processador NLTK.
-        Baixa os recursos necessários na primeira execução.
-        """
+    def __init__(self) -> None:
+        """Inicializa recursos do NLTK e componentes linguísticos."""
         self._baixar_recursos()
-        self.stops = set(stopwords.words('portuguese'))
+        self.stops = set(stopwords.words("portuguese"))
+        self._stemmer = PortugueseStemmer()
 
     def _baixar_recursos(self) -> None:
-        """Baixa os recursos NLTK (executado apenas uma vez)."""
-        nltk.download('punkt', quiet=True)
-        nltk.download('punkt_tab', quiet=True)
-        nltk.download('stopwords', quiet=True)
+        """Baixa os recursos necessários do NLTK."""
+        nltk.download("punkt", quiet=True)
+        nltk.download("punkt_tab", quiet=True)
+        nltk.download("stopwords", quiet=True)
 
-    def processar(self, df: pd.DataFrame, coluna_texto: str) -> pd.DataFrame:
+    def processar(
+        self,
+        df: pd.DataFrame,
+        coluna_texto: str,
+    ) -> pd.DataFrame:
         """
-        Aplica tokenização e remoção de stopwords à coluna de texto.
+        Tokeniza o texto e remove stopwords.
 
-        Args:
-            df (pd.DataFrame): DataFrame com a coluna de texto bruto.
-            coluna_texto (str): Nome da coluna que contém os textos.
-
-        Returns:
-            pd.DataFrame: DataFrame com a coluna de texto processada.
-                          O texto original é SUBSTITUÍDO pelo processado
-                          para manter compatibilidade com o pipeline.
+        A coluna informada é atualizada com o texto normalizado, mantendo
+        o contrato já utilizado pelo pipeline atual.
         """
         print("\n" + "=" * 50)
         print("  NLTK — TOKENIZAÇÃO + STOPWORDS")
         print("=" * 50)
-        print(f"[NLTK] Stopwords carregadas: {len(self.stops)} palavras (pt-BR)")
+        print(
+            f"[NLTK] Stopwords carregadas: "
+            f"{len(self.stops)} palavras (pt-BR)"
+        )
 
-        def _tokenizar_e_filtrar(texto: str) -> str:
+        def tokenizar_e_filtrar(texto: str) -> str:
             tokens = word_tokenize(texto.lower())
+
             tokens_filtrados = [
-                token for token in tokens
+                token
+                for token in tokens
                 if token.isalpha() and token not in self.stops
             ]
+
             return " ".join(tokens_filtrados)
 
-        df[coluna_texto] = df[coluna_texto].apply(_tokenizar_e_filtrar)
+        df[coluna_texto] = df[coluna_texto].apply(tokenizar_e_filtrar)
 
-        # Exibe um exemplo do antes e depois
-        print(f"[NLTK] Exemplo processado: '{df[coluna_texto].iloc[0][:100]}...'")
-        print(f"[NLTK] Concluído com sucesso.\n")
+        if not df.empty:
+            exemplo = df[coluna_texto].iloc[0][:100]
+            print(f"[NLTK] Exemplo processado: '{exemplo}...'")
+
+        print("[NLTK] Concluído com sucesso.\n")
+
+        return df
+
+    def aplicar_stemming(
+        self,
+        df: pd.DataFrame,
+        coluna_origem: str,
+        coluna_destino: str,
+    ) -> pd.DataFrame:
+        """
+        Aplica stemming sem destruir a coluna processada anteriormente.
+
+        Args:
+            df: DataFrame do pipeline.
+            coluna_origem: coluna já tokenizada e sem stopwords.
+            coluna_destino: nova coluna que receberá o texto stemmizado.
+        """
+        print("\n" + "=" * 50)
+        print("  NLTK — STEMMING")
+        print("=" * 50)
+
+        df[coluna_destino] = self._stemmer.transformar(
+            df[coluna_origem].fillna("").astype(str)
+        )
+
+        if not df.empty:
+            exemplo = df[coluna_destino].iloc[0][:100]
+            print(f"[NLTK] Exemplo stemmizado: '{exemplo}...'")
+
+        print(
+            f"[NLTK] Coluna criada: {coluna_destino}"
+        )
+        print("[NLTK] Stemming concluído com sucesso.\n")
 
         return df
